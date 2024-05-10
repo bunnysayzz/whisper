@@ -6,15 +6,17 @@ import { useState } from "react";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // React icons
+import { motion } from "framer-motion"; // For animations
 
+const MotionButton = motion(Button); // Wrap Button component with motion for animations
 
 const Signup = () => {
   const [show, setShow] = useState(false);
- 
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [confirmpassword, setConfirmpassword] = useState();
-  const [password, setPassword] = useState();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [confirmpassword, setConfirmpassword] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const toast = useToast();
@@ -26,7 +28,7 @@ const Signup = () => {
     setLoading(true);
     if (!name || !email || !password || !confirmpassword) {
       toast({
-        title: "Please Fill all the Feilds",
+        title: "Please Fill all the Fields",
         status: "warning",
         duration: 5000,
         isClosable: true,
@@ -43,18 +45,16 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
+      setLoading(false);
       return;
     }
-
-    console.log(name, email);
 
     try {
       const config = {
         headers: { "Content-type": "application/json" },
       };
 
-      const { data } = await axios.post( "/api/user", { name, email, password}, config );
-      console.log(data);
+      const { data } = await axios.post("/api/user", { name, email, password }, config);
 
       toast({
         title: "Registration Successful",
@@ -67,11 +67,10 @@ const Signup = () => {
       localStorage.setItem("userInformation", JSON.stringify(data));
       setLoading(false);
       navigate("/chats");
-
     } catch (error) {
-      console.log(error.message);  
+      console.log(error.message);
       toast({
-        title: "Error Occured!",
+        title: "Error Occurred!",
         description: error.response.data.message,
         status: "error",
         duration: 5000,
@@ -81,7 +80,6 @@ const Signup = () => {
       setLoading(false);
     }
   };
-    
 
   return (
     <VStack spacing="5px">
@@ -90,6 +88,8 @@ const Signup = () => {
         <Input
           placeholder="Enter Your Name"
           onChange={(e) => setName(e.target.value)}
+          borderRadius="lg"
+          borderColor="gray.300" // Updated color
         />
       </FormControl>
       <FormControl id="email" isRequired>
@@ -98,6 +98,8 @@ const Signup = () => {
           type="email"
           placeholder="Enter Your Email Address"
           onChange={(e) => setEmail(e.target.value)}
+          borderRadius="lg"
+          borderColor="gray.300" // Updated color
         />
       </FormControl>
       <FormControl id="password" isRequired>
@@ -107,38 +109,58 @@ const Signup = () => {
             type={show ? "text" : "password"}
             placeholder="Enter Password"
             onChange={(e) => setPassword(e.target.value)}
+            borderRadius="lg"
+            borderColor="gray.300" // Updated color
           />
           <InputRightElement width="4.5rem">
-            <Button colorScheme='cyan' h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
+            <Button
+              colorScheme="blue" // Updated color
+              h="1.75rem"
+              size="sm"
+              onClick={handleClick}
+              borderRadius="lg"
+            >
+              {show ? <FaEyeSlash /> : <FaEye />}
             </Button>
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <FormControl id="password" isRequired>
+      <FormControl id="confirm-password" isRequired>
         <FormLabel>Confirm Password</FormLabel>
         <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
             placeholder="Confirm password"
             onChange={(e) => setConfirmpassword(e.target.value)}
+            borderRadius="lg"
+            borderColor="gray.300" // Updated color
           />
           <InputRightElement width="4.5rem">
-            <Button colorScheme='cyan' h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
+            <Button
+              colorScheme="blue" // Updated color
+              h="1.75rem"
+              size="sm"
+              onClick={handleClick}
+              borderRadius="lg"
+            >
+              {show ? <FaEyeSlash /> : <FaEye />}
             </Button>
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <Button fontWeight="bold"
-        colorScheme="teal"
+      <MotionButton
+        fontWeight="bold"
+        colorScheme="green" // Updated color
         width="100%"
-        style={{ marginTop: 15, fontWeight: 'bold' }}
+        style={{ marginTop: 15 }}
         onClick={submitHandler}
         isLoading={loading}
+        borderRadius="lg"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
         Sign Up
-      </Button>
+      </MotionButton>
     </VStack>
   );
 };

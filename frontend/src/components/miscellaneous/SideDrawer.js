@@ -153,7 +153,7 @@ const SideDrawer = () => {
         </Tooltip>
 
         <Text fontSize="3xl" fontFamily="Work sans bold" fontWeight='bold' color="purple.700" >
-          Text-A-Lot
+          Wishper
         </Text>
 
         <div>
@@ -208,12 +208,12 @@ const SideDrawer = () => {
           <DrawerBody>
             <Box d="flex" pb={2}>
               <Input
-                placeholder="Search by name or email"
+                placeholder="Type name or email"
                 mr={2}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <Button onClick={handleSearch}>Go</Button>
+              <Button onClick={handleSearch}>Search</Button>
             </Box>
             {loading ? (
               <ChatLoading />
