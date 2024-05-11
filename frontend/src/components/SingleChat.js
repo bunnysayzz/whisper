@@ -1,11 +1,10 @@
 import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Box, Text } from "@chakra-ui/layout";
+import { Box, Text, Flex } from "@chakra-ui/layout";
 import "./styles.css";
 import { IconButton, Spinner, useToast } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../config/ChatLogics";
-//import { useHelper } from '../config/helper-hook';
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react"; // Import useCallback
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModal from "./miscellaneous/ProfileModal";
@@ -14,11 +13,11 @@ import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import ChatContext from "../Context/chat-context";
 import Lottie from "react-lottie";
 import animationData from "../animations/typing.json";
+import { FaPaperPlane } from "react-icons/fa";
 
 import io from "socket.io-client";
 
-//const ENDPOINT = "http://localhost:5000"; //development
-const ENDPOINT = "https://textalot.herokuapp.com"; //for deployment -production
+const ENDPOINT = "https://textalot.herokuapp.com";
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -32,7 +31,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const toast = useToast();
 
   const { selectedChat, setSelectedChat, user, notification, setNotification } = useContext(ChatContext);
-  //console.log(selectedChat, "selectedChat in chatBox");
 
   const defaultOptions = {
     loop: true,
@@ -43,7 +41,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     },
   };
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     if (!selectedChat) return;
 
     try {
@@ -60,13 +58,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
       setMessages(data);
       setLoading(false);
-      console.log(data, "fetched messsages of the selected chat data");
 
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
       console.log(error.message);
       toast({
-        title: "Error Occured!",
+        title: "Error Occurred!",
         description: "Failed to Load the Messages",
         status: "error",
         duration: 3000,
@@ -74,10 +71,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         position: "bottom",
       });
     }
-  };
+  }, [selectedChat, user.token, socket, toast]); // Include 'toast' in the dependency array
 
-  const sendMessage = async (event) => {
-    if (event.key === "Enter" && newMessage) {
+  const sendMessage = async () => {
+    if (newMessage) {
 
       socket.emit("stop typing", selectedChat._id);
 
@@ -89,8 +86,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
         };
 
-        //async func -- wont make newMessage empty instantaneously
-        //ui enhancement -- input to be empty as soon as we hit ender/send
         setNewMessage("");
 
         const { data } = await axios.post(
@@ -102,15 +97,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           config
         );
 
-        //setNewMessage("");
         socket.emit("new message", data);
 
         setMessages([...messages, data]);
-        console.log(data, "sent message response data");
       } catch (error) {
         console.log(error.message);
         toast({
-          title: "Error Occured!",
+          title: "Error Occurred!",
           description: "Failed to send the Message",
           status: "error",
           duration: 3000,
@@ -128,30 +121,22 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
 
-    // eslint-disable-next-line
-  }, []);
+    return () => {
+      socket.disconnect(); // Clean up socket connection on unmount
+    };
+
+  }, [user]); // Include 'user' as a dependency
 
   useEffect(() => {
     fetchMessages();
-    //whwnever selctedChat changes, fetchAllMessages again for new selectedChat._id
-
-    //just to keep a track
-    selectedChatCompare = selectedChat;
-
-    // eslint-disable-next-line
-  }, [selectedChat]);
-
-  //console.log(notification, 'notification Bellicon');
+  }, [selectedChat, fetchMessages]); // Include 'selectedChat' and 'fetchMessages' as dependencies
 
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
-      if ( !selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
-
-        // if chat is not selected or doesn't match current chat
+      if (!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
         if (!notification.includes(newMessageRecieved)) {
           setNotification([newMessageRecieved, ...notification]);
-          setFetchAgain(!fetchAgain); //updating our chats in our my chats on newMessageRecieved
-          console.log(notification, "notification bell-icon check");
+          setFetchAgain(!fetchAgain);
         }
       } else {
         setMessages([...messages, newMessageRecieved]);
@@ -162,7 +147,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
 
-    //typing animation code
     if (!socketConnected) return;
 
     if (!typing) {
@@ -170,7 +154,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       socket.emit("typing", selectedChat._id);
     }
 
-    //debounce/throttle function
     let lastTypingTime = new Date().getTime();
     var timerLength = 3000;
 
@@ -182,6 +165,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setTyping(false);
       }
     }, timerLength);
+  };
+
+  const handleKeyPress = (e) => { // Function to handle enter key press
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
   };
 
   return (
@@ -244,12 +234,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </div>
             )}
 
-            <FormControl
-              onKeyDown={sendMessage}
-              id="first-name"
-              isRequired
-              mt={3}
-            >
+            <FormControl id="message-form" isRequired mt={3}>
               {istyping ? (
                 <div>
                   <Lottie
@@ -262,13 +247,22 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
-              <Input
-                variant="filled"
-                bg="#E0E0E0"
-                placeholder="Enter a message.."
-                value={newMessage}
-                onChange={typingHandler}
-              />
+              <Flex align="center">
+                <Input
+                  variant="filled"
+                  bg="#E0E0E0"
+                  placeholder="Enter a message.."
+                  value={newMessage}
+                  onChange={typingHandler}
+                  onKeyDown={handleKeyPress} // Handle enter key press
+                />
+                <IconButton
+                  aria-label="Send Message"
+                  icon={<FaPaperPlane />}
+                  onClick={sendMessage}
+                  ml={2}
+                />
+              </Flex>
             </FormControl>
           </Box>
         </>

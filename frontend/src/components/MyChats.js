@@ -10,6 +10,7 @@ import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { Button } from "@chakra-ui/react";
 //import { useHelper } from '../config/helper-hook';
 
+
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
 
@@ -74,16 +75,54 @@ const MyChats = ({ fetchAgain }) => {
         justifyContent="space-between"
         alignItems="center"
       >
-        My Chats
+        Contacts
         <GroupChatModal>
-          <Button
-            d="flex"
-            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-            rightIcon={<AddIcon />}
-          >
-            New Group Chat
-          </Button>
-        </GroupChatModal>
+  <Button
+    d="flex"
+    fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+    rightIcon={<AddIcon />}
+    _hover={{
+      bg: "teal.500",
+      color: "white",
+    }}
+    _active={{
+      bg: "teal.600",
+    }}
+    transition="background-color 0.3s, color 0.3s"
+    boxShadow="md"
+    borderRadius="full"
+    py="3"
+    px="4"
+    bgGradient="linear(to-r, teal.400, teal.600)"
+    color="white"
+    fontWeight="bold"
+    _focus={{
+      boxShadow: "outline",
+    }}
+    _focusVisible={{
+      bg: "teal.500",
+    }}
+    _before={{
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "rgba(255, 255, 255, 0.1)",
+      borderRadius: "full",
+      transition: "opacity 0.3s",
+      opacity: 0,
+    }}
+    _hover={{
+      _before: {
+        opacity: 1,
+      },
+    }}
+  >
+    New Group
+  </Button>
+</GroupChatModal>
       </Box>
       <Box
         d="flex"
