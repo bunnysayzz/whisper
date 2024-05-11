@@ -46,14 +46,14 @@ app.use(errorHandler);
     res.send('Api running');
 }) */
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, console.log(`Server started on port ${PORT}`.yellow.bold));
 
 
 const io = require("socket.io")(server, {
   pingTimeout: 120000,
   cors: {
-    //origin: "http://localhost:3001", //development
+    //origin: "http://localhost:3000", //development
     origin: "https://textalot.herokuapp.com", //deployment
     credentials: true,
   },
