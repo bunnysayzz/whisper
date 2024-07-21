@@ -7,12 +7,13 @@ const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
-
+const cors = require('cors'); // Add this line at the top with other requires
 
 dotenv.config();
 connectDB(); //mongodb connection
 const app = express();
 
+app.use(cors()); // Enable CORS for all routes and origins
 app.use(express.json()); // to accept json data from req body sent from fe 
 
 app.use("/api/user", userRoutes);
