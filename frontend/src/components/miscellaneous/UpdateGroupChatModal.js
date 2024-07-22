@@ -50,7 +50,7 @@ const UpdateGroupChatModal = ({  fetchAgain, setFetchAgain, fetchMessages }) => 
         headers: { Authorization: `Bearer ${user.token}`}
       };
 
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(`https://wishperbackend.onrender.com/api/user?search=${search}`, config);
 
       console.log(data, 'user search response');
       setLoading(false);
@@ -81,7 +81,7 @@ const UpdateGroupChatModal = ({  fetchAgain, setFetchAgain, fetchMessages }) => 
         };
 
       const { data } = await axios.put(
-        `/api/chat/rename`,
+        `https://wishperbackend.onrender.com/api/chat/rename`,
         {
           chatId: selectedChat._id,
           chatName: groupChatName, //local state
@@ -140,7 +140,7 @@ const UpdateGroupChatModal = ({  fetchAgain, setFetchAgain, fetchMessages }) => 
       };
 
       const { data } = await axios.put(
-        `/api/chat/groupadd`,
+        `https://wishperbackend.onrender.com/api/chat/groupadd`,
         {
           chatId: selectedChat._id,
           userId: userToBeAdded._id,
@@ -191,7 +191,7 @@ const UpdateGroupChatModal = ({  fetchAgain, setFetchAgain, fetchMessages }) => 
       };
 
       const { data } = await axios.put(
-        `/api/chat/groupremove`,
+        `https://wishperbackend.onrender.com/api/chat/groupremove`,
         {
           chatId: selectedChat._id,
           userId: userToBeRemoved._id,

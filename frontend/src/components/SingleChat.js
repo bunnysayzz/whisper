@@ -17,7 +17,7 @@ import { FaPaperPlane } from "react-icons/fa";
 
 import io from "socket.io-client";
 
-const ENDPOINT = "https://textalot.herokuapp.com";
+const ENDPOINT = "https://wishperbackend.onrender.com";
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -52,7 +52,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(true);
 
       const { data } = await axios.get(
-        `/api/message/${selectedChat._id}`,
+        `https://wishperbackend.onrender.com/api/message/${selectedChat._id}`,
         config
       );
 
@@ -89,7 +89,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setNewMessage("");
 
         const { data } = await axios.post(
-          "/api/message",
+          "https://wishperbackend.onrender.com/api/message",
           {
             content: newMessage,
             chatId: selectedChat,

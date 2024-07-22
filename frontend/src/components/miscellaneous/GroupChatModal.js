@@ -61,7 +61,7 @@ const GroupChatModal = ({ children }) => {
         headers: { Authorization: `Bearer ${user.token}`}
       };
 
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(`https://wishperbackend.onrender.com/api/user?search=${search}`, config);
       console.log(data, 'users search response from server');
       
       setLoading(false);
@@ -104,7 +104,7 @@ const GroupChatModal = ({ children }) => {
       };
       
       const { data } = await axios.post(
-        `/api/chat/group`,
+        `https://wishperbackend.onrender.com/api/chat/group`,
         {
           name: groupChatName,
           users: JSON.stringify(selectedUsers.map((selectedUser) => selectedUser._id)), 
