@@ -1,4 +1,4 @@
-# Wishper - MERN Chat Application
+# Whisper - MERN Chat Application
 
 Wishper is a full-stack chat application built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. It allows users to authenticate, create groups, search for users, and engage in real-time messaging.
 
